@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatientService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">patient-service</a> &gt; <a href="index.source.html" class="el_package">com.demo.spring.service</a> &gt; <span class="el_source">PatientService.java</span></div><h1>PatientService.java</h1><pre class="source lang-java linenums">package com.demo.spring.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import com.demo.spring.dto.PatientDTO;
+import com.demo.spring.entity.Patient;
+import com.demo.spring.exceptions.PatientNotFoundException;
+import com.demo.spring.repositories.PatientRepository;
+import com.demo.spring.util.Message;
+
+@Service
+<span class="fc" id="L19">public class PatientService {</span>
+
+	
+<span class="fc" id="L22">	private Logger logger = LogManager.getLogger(this.getClass().getName());</span>
+	@Autowired
+	PatientRepository patientRepo;
+
+	public ResponseEntity&lt;Patient&gt; findPatientService(int patientId) throws PatientNotFoundException {
+<span class="fc" id="L27">		Optional&lt;Patient&gt; patientOp = patientRepo.findById(patientId);</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">		if (patientOp.isPresent()) {</span>
+<span class="fc" id="L29">			logger.info(&quot;patient object succesfully returned with patientId {}&quot;,patientId);</span>
+<span class="fc" id="L30">			return ResponseEntity.ok(patientOp.get());</span>
+		} else {
+<span class="fc" id="L32">			logger.error(&quot;Exception : Patient Not Found Exception thrown&quot;);</span>
+<span class="fc" id="L33">			throw new PatientNotFoundException();</span>
+		}
+
+	}
+
+	public ResponseEntity&lt;Message&gt; savePatientService(PatientDTO patientDTO) {
+		
+<span class="fc" id="L40">		Optional&lt;Patient&gt; patientex = patientRepo.findByEmail(patientDTO.getEmail());</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">		if (patientex.isPresent()) {</span>
+<span class="fc" id="L42">			logger.error(&quot;Patient already exists&quot;);</span>
+<span class="fc" id="L43">			return ResponseEntity.ok(new Message(&quot;Patient already exists&quot;));</span>
+		} else {
+<span class="fc" id="L45">			Patient patient = new Patient(patientDTO.getFirstName(),</span>
+<span class="fc" id="L46">					patientDTO.getLastName(), patientDTO.getEmail());</span>
+<span class="fc" id="L47">			patientRepo.save(patient);</span>
+<span class="fc" id="L48">			logger.info(&quot;patient saved successfully&quot;);</span>
+<span class="fc" id="L49">			return ResponseEntity.ok(new Message(&quot;Patient saved&quot;));</span>
+		}
+
+	}
+
+	public ResponseEntity&lt;Message&gt; updatePatientService(PatientDTO patientDTO) {
+<span class="fc" id="L55">		Optional&lt;Patient&gt; patientOps = patientRepo.findById(patientDTO.getPatientId());</span>
+		
+<span class="fc bfc" id="L57" title="All 2 branches covered.">		if (patientOps.isPresent()) {</span>
+<span class="fc" id="L58">			Patient patient = new Patient(patientDTO.getFirstName(),</span>
+<span class="fc" id="L59">					patientDTO.getLastName(), patientDTO.getEmail());</span>
+<span class="fc" id="L60">			patientRepo.save(patient);</span>
+<span class="fc" id="L61">			logger.info(&quot;patient details updated successfully&quot;);</span>
+<span class="fc" id="L62">			return ResponseEntity.ok(new Message(&quot;Patient updated&quot;));</span>
+		} else {
+<span class="fc" id="L64">			logger.error(&quot;Patient Does not exists&quot;);</span>
+<span class="fc" id="L65">			return ResponseEntity.ok(new Message(&quot;Patient does not exists&quot;));</span>
+		}
+
+	}
+
+	public ResponseEntity&lt;List&lt;Patient&gt;&gt; findPatientByFirstNameService(String firstName)
+			throws PatientNotFoundException {
+<span class="fc" id="L72">		List&lt;Patient&gt; patientList = patientRepo.findAllByFirstName(firstName);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">		if (patientList.isEmpty()) {</span>
+<span class="fc" id="L74">			logger.error(&quot;Exception : Patient Not Found Exception thrown&quot;);</span>
+<span class="fc" id="L75">			throw new PatientNotFoundException();</span>
+		} else {
+<span class="fc" id="L77">			logger.info(&quot;patient list by first name returned successfully&quot;);</span>
+<span class="fc" id="L78">			return ResponseEntity.ok(patientList);</span>
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
